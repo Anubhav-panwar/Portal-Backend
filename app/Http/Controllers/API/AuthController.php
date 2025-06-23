@@ -20,6 +20,7 @@ class AuthController extends Controller
             'company_name' => 'nullable|string|max:255',
             'number_of_employees' => 'nullable|integer',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'role_id' => 'nullable|integer',
             'password' => 'required|string|min:6|confirmed',
         ]);
 
@@ -39,6 +40,7 @@ class AuthController extends Controller
             'company_name' => $request->company_name,
             'number_of_employees' => $request->number_of_employees,
             'profile_picture' => $profilePicturePath,
+            'role_id' => $request->role_id,
             'password' => Hash::make($request->password),
         ]);
 
