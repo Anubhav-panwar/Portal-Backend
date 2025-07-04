@@ -24,4 +24,10 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 Route::post('forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
 Route::post('reset-password', [ForgotPasswordController::class, 'reset']);
-Route::middleware('auth:api')->post('logout', [AuthController::class, 'logout']);
+
+// Protected routes
+Route::middleware('auth:api')->group(function () {
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::get('users', [AuthController::class, 'getAllUsersWithRoleId']);
+    Route::get('profile', [AuthController::class, 'getProfile']);
+});

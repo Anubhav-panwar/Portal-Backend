@@ -40,7 +40,7 @@ class AuthController extends Controller
             'company_name' => $request->company_name,
             'number_of_employees' => $request->number_of_employees,
             'profile_picture' => $profilePicturePath,
-            'role_id' => $request->role_id,
+            'role_id' => $request->role_id ?? 1, // Default to admin if not specified
             'password' => Hash::make($request->password),
         ]);
 
@@ -50,6 +50,7 @@ class AuthController extends Controller
             'message' => 'User registered successfully',
             'user' => $user,
             'token' => $token,
+            'role_id' => $user->role_id,
         ], 201);
     }
 
@@ -68,6 +69,7 @@ class AuthController extends Controller
             'message' => 'Login successful',
             'token' => $token,
             'role_id' => $user ? $user->role_id : null,
+            'user' => $user,
         ]);
     }
 
@@ -78,6 +80,40 @@ class AuthController extends Controller
             return response()->json(['message' => 'Successfully logged out']);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to logout, please try again.'], 500);
+        }
+    }
+
+    /**
+     * Get all users with their role_id
+     */
+    public function getAllUsersWithRoleId()
+    {
+        try {
+            $users = User::select('id', 'name', 'email', 'role_id', 'company_name', 'phone_number')->get();
+            return response()->json([
+                'users' => $users
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to fetch users'], 500);
+        }
+    }
+
+    /**
+     * Get current user profile
+     */
+    public function getProfile()
+    {
+        try {
+            $user = auth()->user();
+            if (!$user) {
+                return response()->json(['error' => 'User not authenticated'], 401);
+            }
+            
+            return response()->json([
+                'user' => $user
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to fetch profile'], 500);
         }
     }
 }
